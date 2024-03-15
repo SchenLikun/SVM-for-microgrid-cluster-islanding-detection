@@ -1,0 +1,924 @@
+//**************************************************************************
+//	Script Developed By:	Chen Likun
+//  Contact:                chenlk@whu.edu.cn
+//  Description:            Only English can be used in this Script. This file aim to automate the batch simulaion for data-driven methods.
+//  Create time:            2022-08-04
+//  Update time:           2022-08-12
+//  btw: ZheGeWenJianZhiNengFangZhenGuZhang,HaoJBFanRen,WoTMDHaiDeiZaiXieYiGeFangZhenGuDaoDe
+//**************************************************************************
+
+//**************************************************************************
+//  Local Variables setting
+//************************************************************************** 
+int i,numCases;
+float Pbase,Qbase;
+string datafilename,resultsfilename,dummy;
+
+//**************************************************************************
+//  Initialization, Total CaseNum = 70*numCases
+//************************************************************************** 
+numCases = 10;
+Pbase = 0.001;
+Qbase = 0.001;
+
+
+//	Start the simulation
+Start;
+
+
+for( i=1 ; i<=numCases ; i++ ){
+//************************************************************************** 
+//  Initialize the IEEE123 Microgrid Cluster Simulation
+//************************************************************************** 
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW150to149" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW13to18" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW13to152" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW18to135" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW108to300" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW54to94" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW67to160" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW67to197" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW76to86" = 0;
+
+
+//  Load Setting
+SetSlider "Subsystem #1 : Loads : Load1 : Pset" = 0.13 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load2 : Pset" = 0.2 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load4 : Pset" = 0.12 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load42 : Pset" = 0.15 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load49B : Pset" = 0.08 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load41 : Pset" = 0.16 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load98 : Pset" = 0.01 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load106 : Pset" = 0.056 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load102 : Pset" = 0.032 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load94 : Pset" = 0.123 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load95 : Pset" = 0.114 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load92 : Pset" = 0.118 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load52 : Pset" = 0.84 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load56 : Pset" = 0.93 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load66 : Pset" = 0.85 + i*Pbase;
+//************************************************************************** 
+//  Fault Setting Location1
+//************************************************************************** 
+
+// Refresh the Plots for saving .csv file
+UpdatePlots;
+// Wait for the system to stabilize, Ready for A to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultALoc1caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultALoc1caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for B to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBLoc1caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBLoc1caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for C to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultCLoc1caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultCLoc1caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AB to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABLoc1caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABLoc1caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for BC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBCLoc1caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBCLoc1caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultACLoc1caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultACLoc1caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for ABC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N93FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N93FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABCLoc1caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABCLoc1caseNum"::itoa(i)::".csv";
+
+//************************************************************************** 
+//  Fault Setting Location2
+//************************************************************************** 
+
+// Refresh the Plots for saving .csv file
+UpdatePlots;
+// Wait for the system to stabilize, Ready for A to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultALoc2caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultALoc2caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for B to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBLoc2caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBLoc2caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for C to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultCLoc2caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultCLoc2caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AB to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABLoc2caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABLoc2caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for BC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBCLoc2caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBCLoc2caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultACLoc2caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultACLoc2caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for ABC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N149FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N149FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABCLoc2caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABCLoc2caseNum"::itoa(i)::".csv";
+
+//************************************************************************** 
+//  Fault Setting Location3
+//************************************************************************** 
+
+// Refresh the Plots for saving .csv file
+UpdatePlots;
+// Wait for the system to stabilize, Ready for A to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultALoc3caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultALoc3caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for B to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBLoc3caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBLoc3caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for C to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultCLoc3caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultCLoc3caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AB to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABLoc3caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABLoc3caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for BC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBCLoc3caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBCLoc3caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultACLoc3caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultACLoc3caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for ABC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N18FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N18FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABCLoc3caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABCLoc3caseNum"::itoa(i)::".csv";
+
+//************************************************************************** 
+//  Fault Setting Location4
+//************************************************************************** 
+
+// Refresh the Plots for saving .csv file
+UpdatePlots;
+// Wait for the system to stabilize, Ready for A to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultALoc4caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultALoc4caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for B to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBLoc4caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBLoc4caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for C to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultCLoc4caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultCLoc4caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AB to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABLoc4caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABLoc4caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for BC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBCLoc4caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBCLoc4caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultACLoc4caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultACLoc4caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for ABC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N25FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N25FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABCLoc4caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABCLoc4caseNum"::itoa(i)::".csv";
+
+
+//************************************************************************** 
+//  Fault Setting Location5
+//************************************************************************** 
+
+// Refresh the Plots for saving .csv file
+UpdatePlots;
+// Wait for the system to stabilize, Ready for A to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultALoc5caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultALoc5caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for B to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBLoc5caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBLoc5caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for C to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultCLoc5caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultCLoc5caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AB to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABLoc5caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABLoc5caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for BC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBCLoc5caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBCLoc5caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultACLoc5caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultACLoc5caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for ABC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N50FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N50FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABCLoc5caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABCLoc5caseNum"::itoa(i)::".csv";
+
+//************************************************************************** 
+//  Fault Setting Location6
+//************************************************************************** 
+
+// Refresh the Plots for saving .csv file
+UpdatePlots;
+// Wait for the system to stabilize, Ready for A to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultALoc6caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultALoc6caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for B to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBLoc6caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBLoc6caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for C to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultCLoc6caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultCLoc6caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AB to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABLoc6caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABLoc6caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for BC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBCLoc6caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBCLoc6caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultACLoc6caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultACLoc6caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for ABC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N57FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N57FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABCLoc6caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABCLoc6caseNum"::itoa(i)::".csv";
+
+
+//************************************************************************** 
+//  Fault Setting Location7
+//************************************************************************** 
+
+// Refresh the Plots for saving .csv file
+UpdatePlots;
+// Wait for the system to stabilize, Ready for A to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultALoc7caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultALoc7caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for B to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBLoc7caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBLoc7caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for C to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultCLoc7caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultCLoc7caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AB to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABLoc7caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABLoc7caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for BC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBCLoc7caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBCLoc7caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultACLoc7caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultACLoc7caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for ABC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N76FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N76FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABCLoc7caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABCLoc7caseNum"::itoa(i)::".csv";
+
+
+
+//************************************************************************** 
+//  Fault Setting Location8
+//************************************************************************** 
+
+// Refresh the Plots for saving .csv file
+UpdatePlots;
+// Wait for the system to stabilize, Ready for A to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultALoc8caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultALoc8caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for B to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBLoc8caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBLoc8caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for C to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultCLoc8caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultCLoc8caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AB to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABLoc8caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABLoc8caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for BC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBCLoc8caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBCLoc8caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultACLoc8caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultACLoc8caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for ABC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N67FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N67FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABCLoc8caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABCLoc8caseNum"::itoa(i)::".csv";
+
+
+
+//************************************************************************** 
+//  Fault Setting Location9
+//************************************************************************** 
+
+// Refresh the Plots for saving .csv file
+UpdatePlots;
+// Wait for the system to stabilize, Ready for A to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultALoc9caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultALoc9caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for B to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBLoc9caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBLoc9caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for C to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultCLoc9caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultCLoc9caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AB to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABLoc9caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABLoc9caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for BC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBCLoc9caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBCLoc9caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultACLoc9caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultACLoc9caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for ABC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N197FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N197FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABCLoc9caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABCLoc9caseNum"::itoa(i)::".csv";
+
+
+
+//************************************************************************** 
+//  Fault Setting Location10
+//************************************************************************** 
+
+// Refresh the Plots for saving .csv file
+UpdatePlots;
+// Wait for the system to stabilize, Ready for A to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultALoc10caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultALoc10caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for B to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBLoc10caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBLoc10caseNum"::itoa(i)::".csv";
+
+
+// Wait for the system to stabilize, Ready for C to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultCLoc10caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultCLoc10caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AB to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FC1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABLoc10caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABLoc10caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for BC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FA1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultBCLoc10caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultBCLoc10caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for AC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FB1" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultACLoc10caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultACLoc10caseNum"::itoa(i)::".csv";
+
+// Wait for the system to stabilize, Ready for ABC to Ground phase fault
+SUSPEND 2;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FA1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FB1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FC1" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : N105FN1" = 1;
+PushButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+ReleaseButton "Subsystem #1 : CTLs : Inputs : N105FLT";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2FaultABCLoc10caseNum"::itoa(i)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7FaultABCLoc10caseNum"::itoa(i)::".csv";
+
+
+
+
+}
+
+//Stop the simulation
+Stop;
+

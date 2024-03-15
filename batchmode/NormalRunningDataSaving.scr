@@ -1,0 +1,89 @@
+//**************************************************************************
+//	Script Developed By:	Chen Likun
+//  Contact:                chenlk@whu.edu.cn
+//  Description:            Only English can be used in this Script. This file aim to automate the batch simulaion for data-driven methods.
+//  Create time:            2022-08-07
+//  Update time:           2022-08-12
+//  btw:                    To Simulate the Normal Running Siutation with various load setting.
+//**************************************************************************
+
+
+
+//**************************************************************************
+//  Local Variables setting
+//************************************************************************** 
+int i,j,numCases;
+float Pbase,Qbase;
+
+//**************************************************************************
+//  Initialization of Local Variables
+//************************************************************************** 
+numCases = 20;
+Pbase = 0.001;
+Qbase = 0.001;
+
+
+//	Start the simulation
+Start;
+//************************************************************************** 
+//  Initialize the IEEE123 Microgrid Cluster Simulation
+//************************************************************************** 
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW150to149" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW13to18" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW13to152" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW18to135" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW108to300" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW54to94" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW67to160" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW67to197" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW76to86" = 0;
+
+for( i=1 ; i<=numCases ; i++ ){
+
+//  Active power re-setting 
+SetSlider "Subsystem #1 : Loads : Load19 : Pset" = 0.02 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load24 : Pset" = 0.058 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load68 : Pset" = 0.4 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load77 : Pset" = 0.45 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load73 : Pset" = 0.46 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load1 : Pset" = 0.14 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load2 : Pset" = 0.21 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load4 : Pset" = 0.13 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load98 : Pset" = 0.02 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load106 : Pset" = 0.066 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load102 : Pset" = 0.042 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load52 : Pset" = 0.85 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load56 : Pset" = 0.94 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load66 : Pset" = 0.86 + i*Pbase;
+
+for( j=1 ; j<=numCases ; j++){
+//  Reactive power re-setting 
+SetSlider "Subsystem #1 : Loads : Load68 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load77 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load73 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load19 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load24 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load1 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load2 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load4 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load98 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load102 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load106 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load52 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load56 : Qset" = 0.001 + j*Qbase;
+SetSlider "Subsystem #1 : Loads : Load66 : Qset" = 0.001 + j*Qbase;
+//  waiting for the system to stablize
+SUSPEND 3;
+
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7NormalRunning"::itoa(i)::"caseNum"::itoa(j)::".csv";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2NormalRunning"::itoa(i)::"caseNum"::itoa(j)::".csv";
+
+
+
+}
+}
+
+
+
+//	Stop the simulation
+Stop;

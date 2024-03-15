@@ -1,0 +1,109 @@
+//**************************************************************************
+//	Script Developed By:	Chen Likun
+//  Contact:                chenlk@whu.edu.cn
+//  Description:            Only English can be used in this Script. This file aim to automate the batch simulaion for data-driven methods.
+//  Create time:            2022-08-05
+//  Update Time:          2022-08-12
+//  btw:                    To Simulate the Islanding Condition
+//**************************************************************************
+
+
+
+//**************************************************************************
+//  Local Variables setting
+//************************************************************************** 
+int i,j,numCases;
+float Pbase,Qbase;
+
+//**************************************************************************
+//  Initialization, MAX numCases = 20(Suggest)
+//************************************************************************** 
+numCases = 30;
+Pbase = 0.001;
+Qbase = 0.001;
+
+
+//	Start the simulation
+Start;
+
+
+for( i=1 ; i<=numCases ; i++ ){
+//  Frist FOR loop to Simulate the MG2 Islanding
+//  MG2 Power Mismatch Setting
+SetSlider "Subsystem #1 : Loads : Load19 : Pset" = 0.02 + i*Pbase;
+SetSlider "Subsystem #1 : Loads : Load24 : Pset" = 0.057 + i*Pbase;
+
+
+for( j=1 ; j<=numCases ; j++){
+//  Load Setting (Only MG5's Power Mismatch)
+SetSlider "Subsystem #1 : Loads : Load68 : Pset" = 0.4 + j*Pbase;
+SetSlider "Subsystem #1 : Loads : Load77 : Pset" = 0.45 + j*Pbase;
+SetSlider "Subsystem #1 : Loads : Load73 : Pset" = 0.46 + j*Pbase;
+
+//************************************************************************** 
+//  Initialize the IEEE123 Microgrid Cluster Simulation, Ready for MG2 and MG5 to Simulate the main grid islanding condition
+//************************************************************************** 
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW150to149" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW13to18" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW13to152" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW18to135" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW108to300" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW54to94" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW67to160" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW67to197" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW76to86" = 0;
+
+//  waiting for the system to stablize
+SUSPEND 3;
+//  Simulate the Main Grid Islanding for both MG2 & MG5
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW150to149" = 0;
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\1MainIslanding\DG7IslandingMainGrid"::itoa(i)::"caseNum"::itoa(j)::".csv";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\1MainIslanding\DG2IslandingMainGrid"::itoa(i)::"caseNum"::itoa(j)::".csv";
+
+//************************************************************************** 
+//  Initialize the IEEE123 Microgrid Cluster Simulation, Ready for MG5 to Simulate the self-islanding condition
+//************************************************************************** 
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW150to149" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW13to18" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW13to152" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW18to135" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW108to300" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW54to94" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW67to160" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW67to197" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW76to86" = 0;
+//  waiting for the system to stablize
+SUSPEND 3;
+//  Simulate the Self-Islanding for MG5
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW67to160" = 0;
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\2SelfIslanding\DG7IslandingSelf"::itoa(i)::"caseNum"::itoa(j)::".csv";
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\3NonIslanding\DG2MGSwitch"::itoa(i)::"caseNum"::itoa(j)::".csv";
+
+
+
+//************************************************************************** 
+//  Initialize the IEEE123 Microgrid Cluster Simulation, Ready for MG2 to Simulate the self-islanding condition
+//************************************************************************** 
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW150to149" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW13to18" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW13to152" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW18to135" = 0;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW108to300" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW54to94" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW67to160" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW67to197" = 1;
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW76to86" = 0;
+//  waiting for the system to stablize
+SUSPEND 3;
+//  Simulate the Self-Islanding for MG5
+SetSwitch "Subsystem #1 : CTLs : Inputs : SW13to18" = 0;
+SavePlotToCSV "DG2OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG2\2SelfIslanding\DG2Islanding"::itoa(i)::"SelfcaseNum"::itoa(j)::".csv";
+SavePlotToCSV "DG7OutputSide","D:\1RTDSMODEL\IDM\BatchModeSimulation\DG7\3NonIslanding\DG7MGSwitch"::itoa(i)::"caseNum"::itoa(j)::".csv";
+
+}
+}
+
+
+
+//	Stop the simulation
+Stop;
