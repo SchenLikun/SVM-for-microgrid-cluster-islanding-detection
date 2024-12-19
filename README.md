@@ -7,6 +7,8 @@ I established a complex microgrid cluster systems based on IEEE-123 system, the 
 
 ***Therefore, only the RTDS modeling and the RTDS script for automatic operation to generate data are provided here.***
 
+***Simply Run ".src" file in RSCAD, you can get the same dataset as tested in our paper***
+
 # CITATION
 >@ARTICLE{LikunChen,  
   author={Chen, Likun and Dong, Xuzhu and Wang, Bo and Shang, Lei and Liu, Chengxi},  
